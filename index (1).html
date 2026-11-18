@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#030305">
+<title>null.byte</title>
+<meta property="og:title" content="null.byte">
+<meta property="og:description" content="someone should check on him.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#030305;--fg:#d6dde6;--dim:#667080;--acc:#7CFFB2;--acc2:#4de8ff;--warn:#ff5f7a;--line:#1c1f29}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg)}
+body{font-family:"JetBrains Mono","Fira Code",ui-monospace,Menlo,Consolas,monospace;color:var(--fg);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+#rain{position:fixed;inset:0;width:100%;height:100%;opacity:.3;pointer-events:none}
+.glow{position:fixed;inset:0;pointer-events:none;background:radial-gradient(700px 500px at 50% 8%,rgba(124,255,178,.11),transparent 70%),radial-gradient(500px 400px at 95% 100%,rgba(255,95,122,.08),transparent 70%)}
+.vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7))}
+.wrap{position:relative;width:100%;max-width:460px;border-radius:17px;padding:1px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 60px rgba(124,255,178,.06);transform:translateZ(0)}
+.wrap::before{content:"";position:absolute;left:-50%;top:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 0 72%,var(--acc) 86%,var(--acc2) 92%,transparent 100%);animation:spin 6s linear infinite;will-change:transform}
+@keyframes spin{to{transform:rotate(360deg)}}
+.win{position:relative;background:#090a0f;border-radius:16px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:7px;padding:12px 14px;border-bottom:1px solid var(--line);background:#07080c}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot:nth-child(1){background:#ff5f7a}.dot:nth-child(2){background:#ffd36e}.dot:nth-child(3){background:#7CFFB2}
+.title{margin-left:auto;font-size:11px;color:var(--dim);letter-spacing:.6px}
+.head{padding:22px 18px 2px}
+.name{display:inline-block;font-size:clamp(24px,7.5vw,30px);font-weight:700;letter-spacing:1px;color:#fff;background:linear-gradient(90deg,#fff,#aef5cf);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:glitch 7s infinite}
+@keyframes glitch{0%,92%,100%{transform:none}93%{transform:translateX(2px) skewX(-4deg)}95%{transform:translateX(-2px) skewX(4deg)}97%{transform:none}}
+.pill{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--acc);border:1px solid rgba(124,255,178,.28);padding:5px 11px;border-radius:99px;background:rgba(124,255,178,.06)}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+#term{padding:16px 18px 6px;font-size:13.5px;line-height:1.9;min-height:285px;white-space:pre-wrap;word-break:break-word}
+.p{color:var(--acc)}.d{color:var(--dim)}.w{color:var(--warn)}
+.cur{display:inline-block;width:8px;height:15px;background:var(--acc);vertical-align:-2px;animation:b 1s steps(1) infinite}
+@keyframes b{50%{opacity:0}}
+.cta{display:block;margin:10px 18px 14px;padding:17px;text-align:center;text-decoration:none;color:#03130a;background:linear-gradient(135deg,var(--acc),var(--acc2));border-radius:12px;font-weight:700;font-size:14px;letter-spacing:.7px;font-family:inherit;opacity:0;transform:translateY(10px);transition:opacity .6s,transform .6s;box-shadow:0 0 28px rgba(124,255,178,.3)}
+.cta.show{opacity:1;transform:none}
+.cta:active{transform:scale(.97)}
+.foot{padding:0 18px 20px;font-size:11px;color:var(--dim);text-align:center;opacity:0;transition:opacity .8s}
+.foot.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.wrap::before,.name,.pill i{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="glow"></div><div class="vig"></div>
+<div class="wrap">
+ <div class="win">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="title">null.byte — zsh</span></div>
+  <div class="head">
+   <div class="name">null.byte</div><br>
+   <span class="pill"><i></i>online · 4:00 AM</span>
+  </div>
+  <div id="term"></div>
+  <a class="cta" id="cta" href="https://ig.me/m/nullbyte.log">[ check on him ]</a>
+  <div class="foot" id="foot">// he won’t reply fast. he will reply.</div>
+ </div>
+</div>
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var c=document.getElementById('rain'),x=c.getContext('2d'),W,H,cols,drops,fs=16,dpr=Math.min(devicePixelRatio||1,2);
+  function size(){
+    W=innerWidth;H=innerHeight;
+    c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);
+    cols=Math.floor(W/fs);drops=[];
+    for(var i=0;i<cols;i++)drops.push(Math.random()*-40);
+    x.fillStyle='#030305';x.fillRect(0,0,W,H);
+  }
+  size();
+  var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(size,200);});
+  var chars='01{}<>/;=+*#$&'.split(''),last=0,on=true;
+  document.addEventListener('visibilitychange',function(){on=!document.hidden;if(on)requestAnimationFrame(draw);});
+  function draw(t){
+    if(!on||reduce)return;
+    requestAnimationFrame(draw);
+    if(t-last<50)return; // ~20fps, smooth and light
+    last=t;
+    x.fillStyle='rgba(3,3,5,.13)';x.fillRect(0,0,W,H);
+    x.fillStyle='#7CFFB2';x.font=fs+'px "JetBrains Mono",monospace';
+    for(var i=0;i<cols;i++){
+      x.fillText(chars[(Math.random()*chars.length)|0],i*fs,drops[i]*fs);
+      if(drops[i]*fs>H&&Math.random()>.975)drops[i]=0;
+      drops[i]+=.55;
+    }
+  }
+  requestAnimationFrame(draw);
+
+  var term=document.getElementById('term'),cta=document.getElementById('cta'),foot=document.getElementById('foot');
+  var script=[
+    {c:'whoami',o:'null.byte'},
+    {c:'uptime',o:'4 days, no sleep'},
+    {c:'cat status.txt',o:'awake. again.'},
+    {c:'git log -1',o:'5:02am  "fixed nothing, broke more"'},
+    {c:'echo $MOOD',o:'undefined',cls:'w'},
+    {c:'sudo ask --about-him',o:'permission denied. ask him yourself.',cls:'w'}
+  ];
+  var i=0;
+  function line(){return document.createElement('div');}
+  function type(el,txt,speed,cb){var n=0;(function t(){if(n<txt.length){el.textContent+=txt[n++];setTimeout(t,speed+Math.random()*30);}else cb&&cb();})();}
+  function next(){
+    if(i>=script.length){
+      var l=line();l.innerHTML='<span class="p">❯</span> <span class="cur"></span>';term.appendChild(l);
+      setTimeout(function(){cta.classList.add('show');},400);
+      setTimeout(function(){foot.classList.add('show');},900);
+      return;
+    }
+    var s=script[i++],row=line(),pr=document.createElement('span'),cm=document.createElement('span');
+    pr.className='p';pr.textContent='❯ ';row.appendChild(pr);row.appendChild(cm);term.appendChild(row);
+    type(cm,s.c,45,function(){setTimeout(function(){
+      var out=line();out.className=s.cls||'d';term.appendChild(out);
+      type(out,s.o,18,function(){setTimeout(next,350);});
+    },250);});
+  }
+  setTimeout(next,600);
+})();
+</script>
+</body>
+</html>
